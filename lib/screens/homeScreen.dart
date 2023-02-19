@@ -15,6 +15,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String text = '';
+
   @override
   void initState() {
     super.initState();
@@ -22,8 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String text = '';
-
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         backgroundColor: Colors.transparent,
@@ -31,7 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
             preferredSize: Size.fromHeight(100), child: Header()),
         body: Container(
           padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-          child: Column(children: [
+          child: SingleChildScrollView(
+              child: Column(children: [
             SizedBox(
               child: TextFormField(
                 style: const TextStyle(color: Colors.white),
@@ -63,18 +64,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 keyboardType: TextInputType.name,
                 initialValue: null,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  setState(() {
+                    text = value;
+                  });
+                },
               ),
             ),
-            SingleChildScrollView(
-                child: Container(
+            Container(
               height: size.height * 0.73,
               padding: const EdgeInsets.only(top: 10),
               child: StreamBuilder<QuerySnapshot>(
                 stream: (text != '' && text != null)
                     ? FirebaseFirestore.instance
                         .collection('annotation')
-                        .where('title', isGreaterThanOrEqualTo: text)
+                        .where('title', isEqualTo: text)
                         .where('title', isLessThan: text + 'z')
                         .snapshots()
                     : FirebaseFirestore.instance
@@ -213,8 +217,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                 },
               ),
-            ))
-          ]),
+            )
+          ])),
         ),
         floatingActionButton: const BottomNavigation());
   }
