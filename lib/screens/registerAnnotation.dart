@@ -219,7 +219,7 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
 
             if (widget.id != null && widget.id != '') {
               log("passo para Update");
-              var update = AnnotationController().updateNotes(widget.id!,
+              var update = await AnnotationController().updateNotes(widget.id!,
                   name.text, mail.text, title.text, annotation.text);
 
               log("reponse update" + update.toString());
@@ -244,7 +244,7 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
                 )));
               }
             } else {
-              var response = AnnotationController().storeAnnotation(
+              var response = await AnnotationController().storeAnnotation(
                   name.text, mail.text, title.text, annotation.text);
 
               if (response == true) {

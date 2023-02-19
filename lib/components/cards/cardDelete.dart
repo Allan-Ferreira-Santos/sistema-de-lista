@@ -29,13 +29,14 @@ class _CardDeleteState extends State<CardDelete> {
                     foregroundColor: Colors.green,
                   ),
                   child: const Text('Delete'),
-                  onPressed: () {
+                  onPressed: () async {
                     setState(() {
                       loading = !loading;
                     });
 
                     // controller delete passing id
-                    var response = AnnotationController().deleteNotes(widget.id);
+                    var response =
+                        await AnnotationController().deleteNotes(widget.id);
 
                     if (response == true) {
                       setState(() {
