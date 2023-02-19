@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sistema_de_lista/components/bottomNavigation.dart';
-import 'package:sistema_de_lista/controllers/annotationController.dart';
+import 'package:sistema_de_lista/components/cards/cardDelete.dart';
+import 'package:sistema_de_lista/screens/registerAnnotation.dart';
+import 'package:sistema_de_lista/screens/viewAnnotation.dart';
 
 import '../components/header.dart';
 
@@ -20,8 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var collection =
-        FirebaseFirestore.instance.collection('annotation').snapshots();
+    String text = '';
 
     Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -69,100 +70,154 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
               height: size.height * 0.73,
               padding: const EdgeInsets.only(top: 10),
-              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: collection,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: (text != '' && text != null)
+                    ? FirebaseFirestore.instance
+                        .collection('annotation')
+                        .where('title', isGreaterThanOrEqualTo: text)
+                        .where('title', isLessThan: text + 'z')
+                        .snapshots()
+                    : FirebaseFirestore.instance
+                        .collection('annotation')
+                        .snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data != null) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushNamed('/ViewAnnotation');
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 15, bottom: 15),
-                            padding: const EdgeInsets.all(10),
-                            decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: Container(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                                    height:
-                                        MediaQuery.of(context).size.height / 13,
-                                    child: const CircleAvatar(
-                                        radius: 20,
-                                        backgroundColor:
-                                            Color.fromARGB(255, 34, 32, 32),
-                                        child: Text("data")),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 9,
-                                  child: Container(
-                                    padding: const EdgeInsets.only(left: 15),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 5),
-                                          child: Text(
-                                            snapshot.data!.docs[index]
-                                                .get('title'),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          child: Text(snapshot.data!.docs[index]
-                                              .get('annotation')),
-                                        )
-                                      ],
+                  return (snapshot.connectionState == ConnectionState.waiting)
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ListView.builder(
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot data = snapshot.data!.docs[index];
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ViewAnnotation(
+                                              annotation: data['annotation'],
+                                              dataCreate: data['annotation'],
+                                              mail: data['mail'],
+                                              name: data['name'],
+                                              title: data['title'],
+                                            )));
+                              },
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.only(top: 15, bottom: 15),
+                                padding: const EdgeInsets.all(10),
+                                decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 3,
+                                      child: Container(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 0, 5, 0),
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                13,
+                                        child: CircleAvatar(
+                                            radius: 20,
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 34, 32, 32),
+                                            child: Text(
+                                              data['name'][0],
+                                            )),
+                                      ),
                                     ),
-                                  ),
+                                    Expanded(
+                                      flex: 11,
+                                      child: Container(
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 5),
+                                              child: Text(data['title']),
+                                            ),
+                                            SizedBox(
+                                              child: Text(
+                                                data['mail'],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                        flex: 2,
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        RegisterAnnotation(
+                                                          id: snapshot.data!
+                                                              .docs[index].id,
+                                                          title: data['title'],
+                                                          annotation: data[
+                                                              'annotation'],
+                                                          mail: data['mail'],
+                                                          name: data['name'],
+                                                        )));
+                                          },
+                                          child: const SizedBox(
+                                            child: Icon(
+                                              Icons.edit,
+                                              color: Colors.black,
+                                              size: 25,
+                                            ),
+                                          ),
+                                        )),
+                                    Expanded(
+                                        flex: 2,
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const CardDelete()));
+                                          },
+                                          child: SizedBox(
+                                            child: InkWell(
+                                              onTap: () {
+                                                showDialog(
+                                                  context: context,
+                                                  barrierDismissible: false,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return CardDelete(
+                                                      id: snapshot
+                                                          .data!.docs[index].id,
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              child: const Icon(
+                                                Icons.delete_outline,
+                                                size: 25,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        )),
+                                  ],
                                 ),
-                                Expanded(
-                                    flex: 2,
-                                    child: InkWell(
-                                      onTap: () {},
-                                      child: const SizedBox(
-                                        child: Icon(
-                                          Icons.edit,
-                                          color: Colors.black,
-                                          size: 25,
-                                        ),
-                                      ),
-                                    )),
-                                Expanded(
-                                    flex: 2,
-                                    child: InkWell(
-                                      onTap: () async {},
-                                      child: const SizedBox(
-                                        child: Icon(
-                                          Icons.delete_outline,
-                                          size: 25,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    )),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          },
                         );
-                      },
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
                 },
               ),
             ))

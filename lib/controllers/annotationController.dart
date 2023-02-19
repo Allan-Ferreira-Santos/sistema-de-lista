@@ -18,20 +18,28 @@ class AnnotationController {
         .catchError((value) => false);
   }
 
-  listNotes() async {
-    var result = await collection.get();
-    var data;
+  updateNotes(String id, name, mail, title, annotation) async {
+    log("ID do update " + id);
 
-    collection.snapshots().listen((event) {
-      result = event;
-    });
+    return await collection
+        .doc(id)
+        .update({
+          'name': name,
+          'mail': mail,
+          'title': title,
+          'annotation': annotation,
+          'dataUpdate': DateTime.now(),
+        })
+        .then((value) => true)
+        .catchError((value) => false);
+  }
 
-    for (var notes in result.docs) {
-      data = notes;
-    }
-
-    print(data.toString());
-
-    return data;
+  deleteNotes(String id) async {
+    log("ID do delete " + id);
+    return await collection
+        .doc(id)
+        .delete()
+        .then((value) => true)
+        .catchError((value) => false);
   }
 }

@@ -1,40 +1,74 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:sistema_de_lista/controllers/annotationController.dart';
 
 class CardDelete extends StatefulWidget {
-  const CardDelete({super.key});
+  final id;
+
+  const CardDelete({this.id, super.key});
 
   @override
   State<CardDelete> createState() => _CardDeleteState();
 }
 
 class _CardDeleteState extends State<CardDelete> {
+  bool loading = false;
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-        title: const Text(
-          'Deseja deletar o contato?',
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.green,
+    return loading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : AlertDialog(
+            title: const Text(
+              'Deseja deletar sua Anotação?',
+              textAlign: TextAlign.center,
             ),
-            child: const Text('Delete'),
-            onPressed: () async {},
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
-            child: const Text('cancelar'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ]);
-    ;
+            actions: [
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.green,
+                  ),
+                  child: const Text('Delete'),
+                  onPressed: () async {
+                    setState(() {
+                      loading = !loading;
+                    });
+
+                    var response =
+                        await AnnotationController().deleteNotes(widget.id);
+
+                    if (response == true) {
+                      setState(() {
+                        loading = !loading;
+                      });
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/HomeScreen',
+                        (route) => false,
+                      );
+                    } else {
+                      setState(() {
+                        loading = !loading;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const SizedBox(
+                        height: 30,
+                        child: Text(
+                            "Infelizmente ocorreu algum erro por favor tente novamente"),
+                      )));
+                    }
+                  },
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                  child: const Text('cancelar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ]);
   }
 }

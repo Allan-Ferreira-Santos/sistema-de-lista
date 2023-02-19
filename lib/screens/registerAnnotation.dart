@@ -1,14 +1,19 @@
 import 'dart:developer';
 
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:sistema_de_lista/controllers/annotationController.dart';
-import 'package:sistema_de_lista/screens/homeScreen.dart';
 import '../components/inputs/Input.dart';
 import '../helpers/Validator.dart';
 
 class RegisterAnnotation extends StatefulWidget {
-  const RegisterAnnotation({super.key});
+  final id;
+  final name;
+  final mail;
+  final title;
+  final annotation;
+
+  const RegisterAnnotation(
+      {this.id, this.title, this.annotation, this.mail, this.name, super.key});
 
   @override
   State<RegisterAnnotation> createState() => _RegisterAnnotation();
@@ -16,13 +21,23 @@ class RegisterAnnotation extends StatefulWidget {
 
 class _RegisterAnnotation extends State<RegisterAnnotation> {
   final _formKey = GlobalKey<FormState>();
+  bool loading = false;
 
   final name = TextEditingController();
   final mail = TextEditingController();
   final title = TextEditingController();
   final annotation = TextEditingController();
 
-  bool loading = false;
+  @override
+  void initState() {
+    if (widget.id != null && widget.id != '') {
+      name.text = widget.name;
+      mail.text = widget.mail;
+      title.text = widget.title;
+      annotation.text = widget.annotation;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +91,7 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
                     });
                   },
                   fillColor: Colors.white,
+                  initialValue: widget.name,
                   filled: true,
                   obscureText: false,
                   placeholder: "Digite seu Nome",
@@ -111,6 +127,7 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
                     });
                   },
                   fillColor: Colors.white,
+                  initialValue: widget.mail,
                   filled: true,
                   obscureText: false,
                   placeholder: "Digite o Email",
@@ -146,6 +163,7 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
                   fillColor: Colors.white,
                   filled: true,
                   obscureText: false,
+                  initialValue: widget.title,
                   placeholder: "Digite o titulo",
                   hintStyle: const TextStyle(
                       color: Colors.black,
@@ -177,6 +195,7 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
                     });
                   },
                   fillColor: Colors.white,
+                  initialValue: widget.annotation,
                   filled: true,
                   obscureText: false,
                   placeholder: "Digite sua anotação",
@@ -197,27 +216,56 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
             setState(() {
               loading = !loading;
             });
-            var response = await AnnotationController().storeAnnotation(
-                name.text, mail.text, title.text, annotation.text);
 
-            if (response == true) {
-              setState(() {
-                loading = !loading;
-              });
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                '/HomeScreen',
-                (route) => false,
-              );
+            if (widget.id != null && widget.id != '') {
+              log("passo para Update");
+              var update = await AnnotationController().updateNotes(
+                  widget.id, name.text, mail.text, title.text, annotation.text);
+
+              log("reponse update" + update.toString());
+
+              if (update == true) {
+                setState(() {
+                  loading = !loading;
+                });
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/HomeScreen',
+                  (route) => false,
+                );
+              } else {
+                setState(() {
+                  loading = !loading;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: const SizedBox(
+                  height: 30,
+                  child: Text(
+                      "Infelizmente ocorreu algum erro por favor tente novamente"),
+                )));
+              }
             } else {
-              setState(() {
-                loading = !loading;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: const SizedBox(
-                height: 30,
-                child: Text(
-                    "Infelizmente ocorreu algum erro por favor tente novamente"),
-              )));
+              var response = await AnnotationController().storeAnnotation(
+                  name.text, mail.text, title.text, annotation.text);
+
+              if (response == true) {
+                setState(() {
+                  loading = !loading;
+                });
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/HomeScreen',
+                  (route) => false,
+                );
+              } else {
+                setState(() {
+                  loading = !loading;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: const SizedBox(
+                  height: 30,
+                  child: Text(
+                      "Infelizmente ocorreu algum erro por favor tente novamente"),
+                )));
+              }
             }
           }
         },
