@@ -1,12 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:sistema_de_lista/controllers/annotationController.dart';
 
 class CardDelete extends StatefulWidget {
-  final id;
+  final String id;
 
-  const CardDelete({this.id, super.key});
+  const CardDelete({required this.id, super.key});
 
   @override
   State<CardDelete> createState() => _CardDeleteState();
@@ -31,13 +29,13 @@ class _CardDeleteState extends State<CardDelete> {
                     foregroundColor: Colors.green,
                   ),
                   child: const Text('Delete'),
-                  onPressed: () async {
+                  onPressed: () {
                     setState(() {
                       loading = !loading;
                     });
 
-                    var response =
-                        await AnnotationController().deleteNotes(widget.id);
+                    // controller delete passing id
+                    var response = AnnotationController().deleteNotes(widget.id);
 
                     if (response == true) {
                       setState(() {
@@ -51,8 +49,8 @@ class _CardDeleteState extends State<CardDelete> {
                       setState(() {
                         loading = !loading;
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const SizedBox(
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: SizedBox(
                         height: 30,
                         child: Text(
                             "Infelizmente ocorreu algum erro por favor tente novamente"),

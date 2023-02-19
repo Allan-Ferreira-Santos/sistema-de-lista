@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ViewAnnotation extends StatefulWidget {
-  final dataCreate;
-  final name;
-  final mail;
-  final title;
-  final annotation;
+  final String? dataCreate;
+  final String? name;
+  final String? mail;
+  final String? title;
+  final String? annotation;
 
   const ViewAnnotation(
       {this.dataCreate,
@@ -56,8 +56,8 @@ class _ViewAnnotationState extends State<ViewAnnotation> {
                     Container(
                       padding: const EdgeInsets.only(left: 5),
                       child: Text(
-                        widget.dataCreate,
-                        style: TextStyle(color: Colors.white),
+                        widget.dataCreate!,
+                        style: const TextStyle(color: Colors.white),
                       ),
                     )
                   ],
@@ -73,8 +73,8 @@ class _ViewAnnotationState extends State<ViewAnnotation> {
                     Container(
                       padding: const EdgeInsets.only(left: 5),
                       child: Text(
-                        widget.name,
-                        style: TextStyle(color: Colors.white),
+                        widget.name!,
+                        style: const TextStyle(color: Colors.white),
                       ),
                     )
                   ],
@@ -90,8 +90,8 @@ class _ViewAnnotationState extends State<ViewAnnotation> {
                     Container(
                       padding: const EdgeInsets.only(left: 5),
                       child: Text(
-                        widget.mail,
-                        style: TextStyle(color: Colors.white),
+                        widget.mail!,
+                        style: const TextStyle(color: Colors.white),
                       ),
                     )
                   ],
@@ -107,8 +107,8 @@ class _ViewAnnotationState extends State<ViewAnnotation> {
                     Container(
                       padding: const EdgeInsets.only(left: 5),
                       child: Text(
-                        widget.title,
-                        style: TextStyle(color: Colors.white),
+                        widget.title!,
+                        style: const TextStyle(color: Colors.white),
                       ),
                     )
                   ],
@@ -124,8 +124,8 @@ class _ViewAnnotationState extends State<ViewAnnotation> {
                     Container(
                       padding: const EdgeInsets.only(left: 5),
                       child: Text(
-                        widget.annotation,
-                        style: TextStyle(color: Colors.white),
+                        widget.annotation!,
+                        style: const TextStyle(color: Colors.white),
                       ),
                     )
                   ],

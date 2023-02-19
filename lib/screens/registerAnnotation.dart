@@ -6,11 +6,11 @@ import '../components/inputs/Input.dart';
 import '../helpers/Validator.dart';
 
 class RegisterAnnotation extends StatefulWidget {
-  final id;
-  final name;
-  final mail;
-  final title;
-  final annotation;
+  final String? id;
+  final String? name;
+  final String? mail;
+  final String? title;
+  final String? annotation;
 
   const RegisterAnnotation(
       {this.id, this.title, this.annotation, this.mail, this.name, super.key});
@@ -31,10 +31,10 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
   @override
   void initState() {
     if (widget.id != null && widget.id != '') {
-      name.text = widget.name;
-      mail.text = widget.mail;
-      title.text = widget.title;
-      annotation.text = widget.annotation;
+      name.text = widget.name!;
+      mail.text = widget.mail!;
+      title.text = widget.title!;
+      annotation.text = widget.annotation!;
     }
     super.initState();
   }
@@ -219,8 +219,8 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
 
             if (widget.id != null && widget.id != '') {
               log("passo para Update");
-              var update = await AnnotationController().updateNotes(
-                  widget.id, name.text, mail.text, title.text, annotation.text);
+              var update = AnnotationController().updateNotes(widget.id!,
+                  name.text, mail.text, title.text, annotation.text);
 
               log("reponse update" + update.toString());
 
@@ -236,15 +236,15 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
                 setState(() {
                   loading = !loading;
                 });
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: const SizedBox(
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: SizedBox(
                   height: 30,
                   child: Text(
                       "Infelizmente ocorreu algum erro por favor tente novamente"),
                 )));
               }
             } else {
-              var response = await AnnotationController().storeAnnotation(
+              var response = AnnotationController().storeAnnotation(
                   name.text, mail.text, title.text, annotation.text);
 
               if (response == true) {
@@ -259,8 +259,8 @@ class _RegisterAnnotation extends State<RegisterAnnotation> {
                 setState(() {
                   loading = !loading;
                 });
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: const SizedBox(
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: SizedBox(
                   height: 30,
                   child: Text(
                       "Infelizmente ocorreu algum erro por favor tente novamente"),

@@ -182,13 +182,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Expanded(
                                         flex: 2,
                                         child: InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const CardDelete()));
-                                          },
                                           child: SizedBox(
                                             child: InkWell(
                                               onTap: () {
