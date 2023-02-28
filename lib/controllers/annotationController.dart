@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -72,4 +73,15 @@ class AnnotationController {
         .then((value) => true)
         .catchError((value) => false);
   }
+
+
+
+
+List<dynamic>? filter({required String text, required List<QueryDocumentSnapshot<Map<String,dynamic>>>? list}) {
+
+
+  return list!.where((element) => element["title"].toString().toLowerCase().contains(text)).toList();
+
+  }
+
 }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sistema_de_lista/components/bottomNavigation.dart';
 import 'package:sistema_de_lista/components/cards/cardDelete.dart';
+import 'package:sistema_de_lista/controllers/annotationController.dart';
 import 'package:sistema_de_lista/screens/registerAnnotation.dart';
 import 'package:sistema_de_lista/screens/viewAnnotation.dart';
 
@@ -74,23 +75,20 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               height: size.height * 0.73,
               padding: const EdgeInsets.only(top: 10),
-              child: StreamBuilder<QuerySnapshot>(
-                stream: (text != '' && text != null)
-                    ? FirebaseFirestore.instance
-                        .collection('annotation')
-                        .where('title', isEqualTo: text)
-                        .where('title', isLessThan: text + 'z')
-                        .snapshots()
-                    : FirebaseFirestore.instance
+              child: StreamBuilder(
+                stream:  FirebaseFirestore.instance
                         .collection('annotation')
                         .snapshots(),
                 builder: (context, snapshot) {
-                  return (snapshot.connectionState == ConnectionState.waiting)
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : ListView.builder(
-                          itemCount: snapshot.data!.docs.length,
+
+
+                  if(snapshot.hasData){
+                      //print(snapshot.data?.docs.first.data());
+                      List<dynamic>? datas = AnnotationController().filter(text: text,list: snapshot.data?.docs);
+                      print(datas);
+
+                      return ListView.builder(
+                          itemCount: datas == null ? 0 : datas.length,
                           itemBuilder: (context, index) {
                             DocumentSnapshot data = snapshot.data!.docs[index];
                             return InkWell(
@@ -215,6 +213,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                         );
+                      //print(datas?.first);
+                     // print(datas?.first);
+                  }
+                
+                 return const Center(child: CircularProgressIndicator());
                 },
               ),
             )
